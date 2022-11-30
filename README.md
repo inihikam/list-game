@@ -19,3 +19,8 @@ Untuk algoritma Delete memiliki beberapa kondisi, antara lain :
   2. Data yang akan dihapus berada di depan
   3. Data lebih dari 1 dan di tengah
   4. Data yang akan dihapus berada di belakang 
+
+TUGAS DIBUAT OLEH :
+1. Yohanes Dimas Pratama   (A11.2021.13254)
+2. Muhammad Maulana Hikam  (A11.2021.13550)
+3. Faza Faresha Affandi    (A11.2021.13917) 
