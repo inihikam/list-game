@@ -56,17 +56,29 @@ void insertData(string nama, int rilis){
                 head = baru;
             }
 
-            //PENGECEKAN DATA BARU LEBIH KECIL DARI NODE BANTU
-            if (baru->rilis < bantu->rilis && baru->rilis > head->rilis){
-                baru->next = bantu;
-                baru->prev = bantu->prev;
-                bantu->prev->next = baru;
-                bantu->prev = baru;
+            //PENGECEKAN DATA BARU LEBIH BESAR DARI NODE BANTU
+            if (baru->rilis > bantu->rilis && baru->rilis < tail->rilis){
+                baru->next = bantu->next;
+                baru->prev = bantu;
+                bantu->next->prev = baru;
+                bantu->next = baru;
+            }
+
+            //PENGECEKAN DATA BARU LEBIH BESAR DARI TAIL
+            if (baru->rilis > tail->rilis){
+                baru->next = head;
+                baru->prev = tail;
+                tail->next = baru;
+                head->prev = baru;
+                tail = baru;
             }
         
             bantu = bantu->next;
         } while (bantu != head);
     }
+
+    //OUTPUT DATA YANG DIMASUKAN
+    cout << "Game " << baru->nama << " " << baru->rilis << " berhasil dimasukan!\n";
 }
 
 void delData(){
@@ -88,13 +100,14 @@ void delData(){
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
             delete hapus;
+            break;
         }
         
         //MENGHAPUS DATA JIKA BERADA DI DEPAN
         if (cariGame == head->nama){
             hapus = head;
-            tail->next = head->next;
             head = head->next;
+            tail->next = head;
             head->prev = tail;
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
@@ -102,10 +115,10 @@ void delData(){
         }
 
         //MENGHAPUS JIKA DATA LEBIH DARI 1 DAN DI TENGAH
-        if (cariGame == bantu->nama){
+        if (cariGame == bantu->nama && cariGame != head->nama){
             hapus = bantu;
-            bantu->next->prev = bantu->prev;
             bantu->prev->next = bantu->next;
+            bantu->next->prev = bantu->prev;
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
             delete hapus;
@@ -114,9 +127,9 @@ void delData(){
         //MENGHAPUS DATA JIKA BERADA DI BELAKANG
         if (cariGame == tail->nama){
             hapus = tail;
-            head->prev = tail->prev;
             tail = tail->prev;
             tail->next = head;
+            head->prev = tail;
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
             delete hapus;
@@ -141,8 +154,6 @@ void showData(){
         do{
             cout << bantu->nama << " | " << bantu->rilis << "\n";
             bantu = bantu->next;
-        } while (bantu != head);
-        
+        } while (bantu != head);   
     }
-    
 }
