@@ -2,7 +2,7 @@
 
 int main(){
 
-    string namaGame, genreGame;
+    string namaGame;
     int choose, tahun;
     do{
         system("cls");

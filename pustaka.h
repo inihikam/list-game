@@ -2,6 +2,7 @@
 #include <iostream>
 #include <conio.h>
 #include <string>
+#include <cstring>
 
 using namespace std;
 
@@ -38,7 +39,7 @@ void insertData(string nama, int rilis){
     baru->prev = NULL;
 
     //KONDISI JIKA DATA KOSONG
-    if (isEmpty() == true){
+    if (head == NULL && tail == NULL){
         head = baru;
         tail = baru;
         tail->next = head;
@@ -46,33 +47,172 @@ void insertData(string nama, int rilis){
     } else {
         //KONDISI JIKA DATA TIDAK KOSONG
         bantu = head;
+
+        //PARSE STRING KE DALAM CHAR ARRAY
+        int sizeBaru = baru->nama.length();
+        int sizeHead = head->nama.length();
+        int sizeTail = tail->nama.length();
+        char namaBaru[sizeBaru + 1];
+        char namaHead[sizeHead + 1];
+        char namaTail[sizeTail + 1];
+        strcpy(namaBaru, baru->nama.c_str());
+        strcpy(namaHead, head->nama.c_str());
+        strcpy(namaTail, tail->nama.c_str());
         do{
-            //JIKA DATA LEBIH KECIL DARI HEAD
-            if (baru->rilis < head->rilis){
+            int sizeBantu = bantu->nama.length();
+            int sizeBantuNext = bantu->next->nama.length();
+            char bantuNama[sizeBantu + 1];
+            char bantuNextNama[sizeBantuNext + 1];
+            strcpy(bantuNama, bantu->nama.c_str());
+            strcpy(bantuNextNama, bantu->next->nama.c_str());
+
+            // JIKA DATA LEBIH KECIL DARI HEAD
+            if (namaBaru[0] < namaHead[0]){
                 baru->next = head;
-                baru->prev = tail;
-                tail->next = baru;
                 head->prev = baru;
                 head = baru;
+                tail->next = head;
+                head->prev = tail;
+                break;
+            }
+            
+            // JIKA SAMA DENGAN HEAD TETAPI SETELAHNYA TIDAK SAMA
+            if (namaBaru[0] == namaHead[0]){
+                int kode = 0;
+                int i = 1;
+                do{
+                    if (namaBaru[i] < namaHead[i]){
+                        kode = 1;
+                        break;
+                    }
+                    if (namaBaru[i] > namaHead[i]){
+                        kode = 2;
+                        break;
+                    }
+                    i++;
+                } while (namaHead[i] != '\0');
+                
+                if (kode == 1){
+                    baru->next = head;
+                    head->prev = baru;
+                    head = baru;
+                    tail->next = head;
+                    head->prev = tail;
+                }
+
+                if (kode == 2){
+                    if (head == tail){
+                        tail->next = baru;
+                        baru->prev = tail;
+                        tail = baru;
+                        tail->next = head;
+                        head->prev = tail;
+                    } else {
+                        baru->next = bantu->next;
+                        bantu->next->prev = baru;
+                        bantu->next = baru;
+                        baru->prev = bantu;
+                    }
+                }
+                break;
             }
 
-            //PENGECEKAN DATA BARU LEBIH BESAR DARI NODE BANTU
-            if (baru->rilis > bantu->rilis && baru->rilis < tail->rilis){
+            // PENGECEKAN DATA BARU LEBIH BESAR DARI TAIL
+            if (namaBaru[0] > namaTail[0]){
+                tail->next = baru;
+                baru->prev = tail;
+                tail = baru;
+                tail->next = head;
+                head->prev = tail;
+                break;
+            }
+
+            // PENGECEKAN JIKA HURUF PERTAMA BARU SAMA DENGAN TAIL DAN SETELAHNYA TIDAK
+            if (namaBaru[0] == namaTail[0]){
+                int kode = 0;
+                int i = 1;
+                do{
+                    if (namaBaru[i] < namaTail[i]){
+                        kode = 1;
+                        break;
+                    }
+                    if (namaBaru[i] > namaTail[i]){
+                        kode = 2;
+                        break;
+                    }
+                    i++;
+                } while (namaTail[i] != '\0');
+                
+                if (kode == 1){
+                    if (head == tail){
+                        baru->next = tail;
+                        tail->prev = baru;
+                        head = baru;
+                        tail->next = head;
+                        head->prev = tail;
+                    } else {
+                        baru->next = tail;
+                        baru->prev = tail->prev;
+                        tail->prev->next = baru;
+                        tail->prev = baru;
+                    }
+                }
+
+                if (kode == 2){
+                    tail->next = baru;
+                    baru->prev = tail;
+                    tail = baru;
+                    tail->next = head;
+                    head->prev = tail;    
+                }
+                
+                break;
+            }
+             
+            // PENGECEKAN DATA BARU LEBIH BESAR DARI NODE BANTU
+            if (namaBaru[0] > bantuNama[0] && namaBaru[0] < bantuNextNama[0]){
                 baru->next = bantu->next;
-                baru->prev = bantu;
                 bantu->next->prev = baru;
                 bantu->next = baru;
+                baru->prev = bantu;
+                break;
             }
 
-            //PENGECEKAN DATA BARU LEBIH BESAR DARI TAIL
-            if (baru->rilis > tail->rilis){
-                baru->next = head;
-                baru->prev = tail;
-                tail->next = baru;
-                head->prev = baru;
-                tail = baru;
+            // PENGECEKAN DATA JIKA HURUF PERTAMA SAMA DENGAN BANTU TAPI SETELAHNYA TIDAK
+            if (namaBaru[0] == bantuNama[0] && namaBaru[0] > namaHead[0] && namaBaru[0] < namaTail[0]){
+                int kode = 0;
+                int i = 1;
+                do{
+                    if (namaBaru[i] < bantuNama[i]){
+                        kode = 1;
+                        break;
+                    }
+                    if (namaBaru[i] > bantuNama[i]){
+                        kode = 2;
+                        break;
+                    }
+                    i++;
+                } while (bantuNama[i] != '\0');
+                
+                if (kode == 1){
+                    baru->next = bantu;
+                    baru->prev = bantu->prev;
+                    bantu->prev->next = baru;
+                    bantu->prev = baru;
+                }
+
+                if (kode == 2){
+                    baru->next = bantu->next;
+                    bantu->next->prev = baru;
+                    bantu->next = baru;
+                    baru->prev = bantu;
+                }
+                break;
             }
-        
+            
+            memset(bantuNama, 0, sizeBantu);
+            memset(bantuNextNama, 0, sizeBantuNext);
+            sizeBantu = 0;
             bantu = bantu->next;
         } while (bantu != head);
     }
@@ -91,7 +231,6 @@ void delData(){
     cin.ignore();
     getline(cin, cariGame);
     do{
-
         //MENGHAPUS JIKA DATA HANYA ADA 1
         if (cariGame == bantu->nama && head == tail){
             hapus = head;
@@ -112,6 +251,7 @@ void delData(){
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
             delete hapus;
+            break;
         }
 
         //MENGHAPUS JIKA DATA LEBIH DARI 1 DAN DI TENGAH
@@ -122,6 +262,7 @@ void delData(){
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
             delete hapus;
+            break;
         }
 
         //MENGHAPUS DATA JIKA BERADA DI BELAKANG
@@ -133,6 +274,7 @@ void delData(){
             ketemu = true;
             cout << hapus->nama << " berhasil dihapus!\n";
             delete hapus;
+            break;
         }
         
         bantu = bantu->next;
